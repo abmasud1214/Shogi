@@ -49,18 +49,18 @@ public class CapturedGUI extends Pane {
             }
 
             if(x) {
-                int l = row*2 + col;
-                boardGUI.movePieces(row, col, board.getCaptured(l, capturedType));
+                int l = row*rectList[0].length + col;
+                this.boardGUI.movePieces(row, col, board.getCaptured(l, capturedType));
                 drawPieces();
             }
         });
     }
 
-    private void drawPieces(){
+    public void drawPieces(){
         Text t;
         for(int i = 0; i < rectList.length; i++){
             for(int j = 0; j < rectList[i].length; j++){
-                int x = i * rectList.length + j;
+                int x = i*rectList[i].length + j;
                 Piece piece = board.getCaptured(x, capturedType);
                 Rectangle r = (Rectangle) rectList[i][j].getChildren().get(0);
                 rectList[i][j].getChildren().clear();

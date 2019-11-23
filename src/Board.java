@@ -75,8 +75,7 @@ public class Board {
         }
     }
 
-    public boolean movePiece(Piece piece, int newY, int newX){
-        boolean bool = false;
+    public void movePiece(Piece piece, int newY, int newX){
         try{
             int x = piece.getPosX();
             int y = piece.getPosY();
@@ -86,11 +85,11 @@ public class Board {
                 } else {
                     removeFromCaptured(piece, capturedTwo);
                 }
+            } else {
+                board[y][x] = null;
             }
-            board[y][x] = null;
-            if(board[newY][newX] != null){
+            if(board[newY][newX] != null) {
                 killPiece(board[newY][newX]);
-                bool = true;
             }
             board[newY][newX] = piece;
             piece.setPosX(newX);
@@ -98,7 +97,6 @@ public class Board {
         } catch (IndexOutOfBoundsException e){
             e.printStackTrace();
         }
-        return bool;
     }
 
     private void removeFromCaptured(Piece piece, Piece[] captured) {
@@ -120,6 +118,7 @@ public class Board {
             while(capturedOne[i] != null) i++;
             capturedOne[i] = new Piece(piece.getName(), 1, -1, -1);
         }
+        int i = 5;
     }
 
     public boolean[][] legalMoves(Piece piece){

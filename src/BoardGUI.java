@@ -6,18 +6,17 @@ import javafx.scene.text.Text;
 import org.w3c.dom.css.Rect;
 
 public class BoardGUI extends Pane {
-    private final int sizeX = 540;
-    private final int sizeY = 540;
+
     private Board board;
     private StackPane[][] rectList;
     private Piece selectedPiece;
     private boolean[][] legalMoves;
 
-    public BoardGUI(){
+    public BoardGUI(Board board){
         final int width = 45;
         final int height = 45;
 
-        board = new Board();
+        this.board = board;
         rectList = new StackPane[9][9];
         boolean[][] legalMoves = new boolean[9][9];
 
@@ -58,8 +57,7 @@ public class BoardGUI extends Pane {
         });
     }
 
-    public boolean movePieces(int row, int col, Piece piece){
-        boolean kill = false;
+    public void movePieces(int row, int col, Piece piece){
         Rectangle r = (Rectangle) rectList[row][col].getChildren().get(0);
         r.setFill(Color.RED);
         Rectangle rect;
@@ -81,17 +79,13 @@ public class BoardGUI extends Pane {
                     rect = (Rectangle) rectList[i][j].getChildren().get(0);
                     rect.setFill(Color.WHITE);
                     if (legalMoves[i][j] && i == row && j == col) {
-                        if(board.movePiece(selectedPiece, row, col)){
-                            kill = true;
-                        }
+                        board.movePiece(selectedPiece, row, col);
                     }
                 }
             }
             selectedPiece = null;
             drawPieces();
-            System.out.println(board.toString());
         }
-        return kill;
     }
 
     private void drawPieces(){

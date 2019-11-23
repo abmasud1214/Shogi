@@ -10,6 +10,8 @@ public class BoardGUI extends Pane {
     private final int sizeY = 540;
     private Board board;
     private StackPane[][] rectList;
+    private Piece selectedPiece;
+    private boolean[][] legalMoves;
 
     public BoardGUI(){
         final int width = 45;
@@ -17,8 +19,7 @@ public class BoardGUI extends Pane {
 
         board = new Board();
         rectList = new StackPane[9][9];
-        Piece selectedPiece[] = new Piece[1];
-        boolean[][][] legalMoves = new boolean[1][][];
+        boolean[][] legalMoves = new boolean[9][9];
 
         for(int i = 0; i < 9; i++){
             for(int j = 0; j < 9; j++){
@@ -52,37 +53,45 @@ public class BoardGUI extends Pane {
             }
 
             if(x) {
-                Rectangle r = (Rectangle) rectList[row][col].getChildren().get(0);
-                r.setFill(Color.RED);
-                Rectangle rect;
-
-                if (selectedPiece[0] == null) {
-                    selectedPiece[0] = board.getPiece(row, col);
-                    legalMoves[0] = board.legalMoves(selectedPiece[0]);
-                    for (int i = 0; i < 9; i++) {
-                        for (int j = 0; j < 9; j++) {
-                            if (legalMoves[0][i][j]) {
-                                rect = (Rectangle) rectList[i][j].getChildren().get(0);
-                                rect.setFill(Color.LIGHTBLUE);
-                            }
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < 9; i++) {
-                        for (int j = 0; j < 9; j++) {
-                            rect = (Rectangle) rectList[i][j].getChildren().get(0);
-                            rect.setFill(Color.WHITE);
-                            if (legalMoves[0][i][j] && i == row && j == col) {
-                                board.movePiece(selectedPiece[0], row, col);
-                            }
-                        }
-                    }
-                    selectedPiece[0] = null;
-                    drawPieces();
-                    System.out.println(board.toString());
-                }
+                movePieces(row, col, board.getPiece(row, col));
             }
         });
+    }
+
+    public boolean movePieces(int row, int col, Piece piece){
+        boolean kill = false;
+        Rectangle r = (Rectangle) rectList[row][col].getChildren().get(0);
+        r.setFill(Color.RED);
+        Rectangle rect;
+
+        if (selectedPiece == null) {
+            selectedPiece = piece;
+            legalMoves = board.legalMoves(selectedPiece);
+            for (int i = 0; i < 9; i++) {
+                for (int j = 0; j < 9; j++) {
+                    if (legalMoves[i][j]) {
+                        rect = (Rectangle) rectList[i][j].getChildren().get(0);
+                        rect.setFill(Color.LIGHTBLUE);
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < 9; i++) {
+                for (int j = 0; j < 9; j++) {
+                    rect = (Rectangle) rectList[i][j].getChildren().get(0);
+                    rect.setFill(Color.WHITE);
+                    if (legalMoves[i][j] && i == row && j == col) {
+                        if(board.movePiece(selectedPiece, row, col)){
+                            kill = true;
+                        }
+                    }
+                }
+            }
+            selectedPiece = null;
+            drawPieces();
+            System.out.println(board.toString());
+        }
+        return kill;
     }
 
     private void drawPieces(){

@@ -1,5 +1,6 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -11,7 +12,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Scene scene = new Scene(new BoardGUI(), 540, 540);
+        Board board = new Board();
+        BoardGUI boardGUI = new BoardGUI();
+        CapturedGUI cGUI1 = new CapturedGUI(board, boardGUI, 1);
+        CapturedGUI cGUI2 = new CapturedGUI(board, boardGUI, 2);
+        HBox hBox = new HBox();
+        hBox.getChildren().addAll(cGUI1, boardGUI, cGUI2);
+        Scene scene = new Scene(hBox);
 
         stage.setScene(scene);
         stage.setTitle("Shogi");

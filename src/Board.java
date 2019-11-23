@@ -59,20 +59,58 @@ public class Board {
         return null;
     }
 
-    public void movePiece(Piece piece, int newY, int newX){
+    public Piece getCaptured(int x, int y){
+        if(y == 1){
+            if(capturedOne[x] != null){
+                return capturedOne[x];
+            } else {
+                return null;
+            }
+        } else {
+            if(capturedTwo[x] != null){
+                return capturedTwo[x];
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public boolean movePiece(Piece piece, int newY, int newX){
+        boolean bool = false;
         try{
             int x = piece.getPosX();
             int y = piece.getPosY();
+            if(x == -1 && y == -1){
+                if(piece.getDir() == 1){
+                    removeFromCaptured(piece, capturedOne);
+                } else {
+                    removeFromCaptured(piece, capturedTwo);
+                }
+            }
             board[y][x] = null;
+            if(board[newY][newX] != null){
+                killPiece(board[newY][newX]);
+                bool = true;
+            }
             board[newY][newX] = piece;
             piece.setPosX(newX);
             piece.setPosY(newY);
         } catch (IndexOutOfBoundsException e){
             e.printStackTrace();
         }
+        return bool;
     }
 
-    public void killPiece(Piece piece){
+    private void removeFromCaptured(Piece piece, Piece[] captured) {
+        for(int i = 0; i < captured.length; i++){
+            if(captured[i] == piece){
+                captured[i] = null;
+                break;
+            }
+        }
+    }
+
+    private void killPiece(Piece piece){
         if(piece.getDir() == 1){
             int i = 0;
             while(capturedTwo[i] != null) i++;
@@ -174,7 +212,7 @@ public class Board {
         }
     }
 
-    public boolean fuhyoInFile(int col){
+    private boolean fuhyoInFile(int col){
         for(int row = 0; row < board.length; row++){
             if(board[row][col] != null && board[row][col].getName().equals("Fuhyo")){
                 return true;

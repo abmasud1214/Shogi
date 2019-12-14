@@ -50,25 +50,52 @@ public class Board {
         }
     }
 
-    public Piece getPiece(int x, int y){
+    public Piece getPiece(int y, int x){
         try{
-            return board[x][y];
+            return board[y][x];
         } catch (IndexOutOfBoundsException e){
             e.printStackTrace();
         }
         return null;
     }
 
-    public Piece getCaptured(int x, int y){
-        if(y == 1){
-            if(capturedOne[x] != null){
-                return capturedOne[x];
+    public int[] getPosition(Piece piece){
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[i].length; j++){
+                if(piece == board[i][j]){
+                    int[] pos = new int[]{0, i, j};
+                    return pos;
+                }
+            }
+        }
+
+        for(int i = 0; i < capturedOne.length; i++){
+            if(capturedOne[i] == piece){
+                int[] pos = new int[]{1, i};
+                return pos;
+            }
+        }
+
+        for(int i = 0; i < capturedTwo.length; i++){
+            if(capturedTwo[i] == piece){
+                int[] pos = new int[]{2, i};
+                return pos;
+            }
+        }
+
+        return null;
+    }
+
+    public Piece getCaptured(int position, int team){
+        if(team == 1){
+            if(capturedOne[position] != null){
+                return capturedOne[position];
             } else {
                 return null;
             }
         } else {
-            if(capturedTwo[x] != null){
-                return capturedTwo[x];
+            if(capturedTwo[position] != null){
+                return capturedTwo[position];
             } else {
                 return null;
             }
@@ -134,12 +161,12 @@ public class Board {
                 for(int j = 0; j < lMoves[i].length; j++){
                     lMoves[i][j] = true;
                     if(piece.getName().equals("Fuhyo")
-                            && fuhyoInFile(j)){
+                            && fuhyoInFile(j, piece.getDir())){
                         lMoves[i][j] = false;
                     }
-                    if(piece.getName().equals("Fuhyo")
+                    if((piece.getName().equals("Fuhyo")
                             || piece.getName().equals("Kyosha")
-                            || piece.getName().equals("Kei-Ma")
+                            || piece.getName().equals("Kei-Ma"))
                             && (i == 4 + 4*(piece.getDir()))){
                         lMoves[i][j] = false;
                     }
@@ -211,9 +238,10 @@ public class Board {
         }
     }
 
-    private boolean fuhyoInFile(int col){
+    private boolean fuhyoInFile(int col, int team){
         for(int row = 0; row < board.length; row++){
-            if(board[row][col] != null && board[row][col].getName().equals("Fuhyo")){
+            if(board[row][col] != null && board[row][col].getDir() == team
+                    && board[row][col].getName().equals("Fuhyo")){
                 return true;
             }
         }

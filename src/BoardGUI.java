@@ -1,3 +1,5 @@
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -38,102 +40,85 @@ public class BoardGUI extends Pane {
         }
 
         drawPieces();
-
-        this.setOnMouseClicked(e -> {
-            double posX = e.getX();
-            double posY = e.getY();
-
-            int col = (int) (posX / width);
-            int row = (int) (posY / height);
-            boolean x = true;
-
-            if(col < 0 || row < 0 || col >= 9 || row >= 9){
-                x = false;
-            }
-
-            if(x) {
-                movePieces(row, col, board.getPiece(row, col));
-            }
-        });
     }
 
-    public void movePieces(int row, int col, Piece piece){
-        Rectangle r = (Rectangle) rectList[row][col].getChildren().get(0);
-        r.setFill(Color.RED);
-        Rectangle rect;
-
-        if (selectedPiece == null) {
-            selectedPiece = piece;
-            legalMoves = board.legalMoves(selectedPiece);
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    if (legalMoves[i][j]) {
-                        rect = (Rectangle) rectList[i][j].getChildren().get(0);
-                        rect.setFill(Color.LIGHTBLUE);
-                    }
+    public void drawLegal(Piece piece){
+        legalMoves = board.legalMoves(piece);
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (legalMoves[i][j]) {
+                    Rectangle rect = (Rectangle) rectList[i][j].getChildren().get(0);
+                    rect.setFill(Color.LIGHTBLUE);
                 }
             }
-        } else {
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    rect = (Rectangle) rectList[i][j].getChildren().get(0);
-                    rect.setFill(Color.WHITE);
-                    if (legalMoves[i][j] && i == row && j == col) {
-                        board.movePiece(selectedPiece, row, col);
-                    }
-                }
-            }
-            selectedPiece = null;
-            drawPieces();
         }
     }
 
-    private void drawPieces(){
+    public void drawPieces(){
         Text t;
         for(int i = 0; i < rectList.length; i++){
             for(int j = 0; j < rectList[i].length; j++){
                 Piece piece = board.getPiece(i, j);
-                Rectangle r = (Rectangle) rectList[i][j].getChildren().get(0);
-                rectList[i][j].getChildren().clear();
-                rectList[i][j].getChildren().add(r);
+                ObservableList<Node> nodeList = rectList[i][j].getChildren();
+                if(nodeList.size() == 2){
+                    nodeList.remove(1);
+                }
                 if(piece != null){
                     switch (piece.getName()){
                         case "Gyoku":
                             t = new Text("K");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Kin":
                             t = new Text("G");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Gin":
                             t = new Text("S");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Kei-Ma":
                             t = new Text("Kn");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Kyosha":
                             t = new Text("L");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Kaku":
                             t = new Text("B");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Hisha":
                             t = new Text("R");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Fuhyo":
                             t = new Text("P");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         default:
                             break;
                     }
                 }
+            }
+        }
+    }
+
+    public void drawRed(int row, int col) {
+        Rectangle rect = (Rectangle) rectList[row][col].getChildren().get(0);
+        rect.setFill(Color.RED);
+    }
+
+    public void clearColor(int row, int col){
+        Rectangle rect = (Rectangle) rectList[row][col].getChildren().get(0);
+        rect.setFill(Color.WHITE);
+    }
+
+    public void clearLegal() {
+        for(int i = 0; i < rectList.length; i++){
+            for(int j = 0; j < rectList[i].length; j++){
+                clearColor(i, j);
             }
         }
     }

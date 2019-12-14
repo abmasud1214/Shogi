@@ -1,3 +1,5 @@
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -8,6 +10,7 @@ public class CapturedGUI extends Pane {
     private Board board;
     private StackPane[][] rectList;
     private BoardGUI boardGUI;
+    private Piece selectedPiece;
     int capturedType;
 
     public CapturedGUI(Board board, BoardGUI boardGUI, int capturedType){
@@ -35,26 +38,18 @@ public class CapturedGUI extends Pane {
                 this.getChildren().add(rectList[i][j]);
             }
         }
-
-        this.setOnMouseClicked(e -> {
-            double posX = e.getX();
-            double posY = e.getY();
-
-            int col = (int) (posX / width);
-            int row = (int) (posY / height);
-            boolean x = true;
-
-            if(col < 0 || row < 0 || col >= 2 || row >= 2){
-                x = false;
-            }
-
-            if(x) {
-                int l = row*rectList[0].length + col;
-                this.boardGUI.movePieces(row, col, board.getCaptured(l, capturedType));
-                drawPieces();
-            }
-        });
     }
+
+    public void drawRed(int row, int col){
+        Rectangle rect = (Rectangle) rectList[row][col].getChildren().get(0);
+        rect.setFill(Color.RED);
+    }
+
+    public void clearColor(int row, int col){
+        Rectangle rect = (Rectangle) rectList[row][col].getChildren().get(0);
+        rect.setFill(Color.WHITE);
+    }
+
 
     public void drawPieces(){
         Text t;
@@ -62,42 +57,43 @@ public class CapturedGUI extends Pane {
             for(int j = 0; j < rectList[i].length; j++){
                 int x = i*rectList[i].length + j;
                 Piece piece = board.getCaptured(x, capturedType);
-                Rectangle r = (Rectangle) rectList[i][j].getChildren().get(0);
-                rectList[i][j].getChildren().clear();
-                rectList[i][j].getChildren().add(r);
+                ObservableList<Node> nodeList = rectList[i][j].getChildren();
+                if(nodeList.size() == 2){
+                    nodeList.remove(1);
+                }
                 if(piece != null){
                     switch (piece.getName()){
                         case "Gyoku":
                             t = new Text("K");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Kin":
                             t = new Text("G");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Gin":
                             t = new Text("S");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Kei-Ma":
                             t = new Text("Kn");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Kyosha":
                             t = new Text("L");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Kaku":
                             t = new Text("B");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Hisha":
                             t = new Text("R");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         case "Fuhyo":
                             t = new Text("P");
-                            rectList[i][j].getChildren().add(t);
+                            nodeList.add(t);
                             break;
                         default:
                             break;

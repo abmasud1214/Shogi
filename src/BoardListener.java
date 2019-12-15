@@ -17,8 +17,6 @@ public class BoardListener extends HBox {
         capturedGUI1 = new CapturedGUI(board, boardGUI, 1);
         capturedGUI2 = new CapturedGUI(board, boardGUI, 2);
 
-        System.out.println(board);
-
         this.getChildren().addAll(capturedGUI1, boardGUI, capturedGUI2);
 
         this.setOnMouseClicked(e -> {
@@ -42,6 +40,9 @@ public class BoardListener extends HBox {
         if(selectedPiece == null){
             int l = row*2 + col;
             selectedPiece = board.getCaptured(l, 1);
+            if(selectedPiece != null && selectedPiece.getDir() != board.getTurn()) {
+                selectedPiece = null;
+            }
             if(selectedPiece != null) {
                 capturedGUI1.drawRed(row, col);
                 boardGUI.drawLegal(selectedPiece);
@@ -59,6 +60,9 @@ public class BoardListener extends HBox {
 
         if(selectedPiece == null){
             selectedPiece = board.getPiece(row, col);
+            if(selectedPiece != null && selectedPiece.getDir() != board.getTurn()) {
+                selectedPiece = null;
+            }
             if(selectedPiece != null) {
                 boardGUI.drawRed(row, col);
                 boardGUI.drawLegal(selectedPiece);
@@ -84,6 +88,9 @@ public class BoardListener extends HBox {
         if(selectedPiece == null){
             int l = row*2 + col;
             selectedPiece = board.getCaptured(l, 2);
+            if(selectedPiece != null && selectedPiece.getDir() != board.getTurn()) {
+                selectedPiece = null;
+            }
             if(selectedPiece != null) {
                 capturedGUI2.drawRed(row, col);
                 boardGUI.drawLegal(selectedPiece);

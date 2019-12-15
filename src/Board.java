@@ -6,6 +6,7 @@ public class Board {
     private Piece[][] board;
     private Piece[] capturedOne;
     private Piece[] capturedTwo;
+    private int turn = 1;
 
     public Board(){
         board = new Piece[9][9];
@@ -102,6 +103,10 @@ public class Board {
         }
     }
 
+    public int getTurn(){
+        return turn;
+    }
+
     public void movePiece(Piece piece, int newY, int newX){
         try{
             int x = piece.getPosX();
@@ -121,6 +126,7 @@ public class Board {
             board[newY][newX] = piece;
             piece.setPosX(newX);
             piece.setPosY(newY);
+            turn *= -1;
         } catch (IndexOutOfBoundsException e){
             e.printStackTrace();
         }

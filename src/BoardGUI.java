@@ -42,13 +42,21 @@ public class BoardGUI extends Pane {
         drawPieces();
     }
 
-    public void drawLegal(Piece piece){
+    public void drawLegal(Piece piece, boolean promote){
         legalMoves = board.legalMoves(piece);
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 if (legalMoves[i][j]) {
                     Rectangle rect = (Rectangle) rectList[i][j].getChildren().get(0);
                     rect.setFill(Color.LIGHTBLUE);
+                    if(((i == 4 + (2 * piece.getDir()))
+                            || (i == 4 + (3 * piece.getDir())
+                            || (i == 4 + (4 * piece.getDir())))
+                            || (piece.getPosY() == 4 + (2 * piece.getDir()))
+                            || (piece.getPosY() == 4 + (3 * piece.getDir()))
+                            || (piece.getPosY() == 4 + (4 * piece.getDir()))) && promote){
+                        rect.setFill(Color.LIGHTGREEN);
+                    }
                 }
             }
         }
@@ -77,24 +85,48 @@ public class BoardGUI extends Pane {
                             t = new Text("S");
                             nodeList.add(t);
                             break;
+                        case "Narigin":
+                            t = new Text("S*");
+                            nodeList.add(t);
+                            break;
                         case "Kei-Ma":
                             t = new Text("Kn");
+                            nodeList.add(t);
+                            break;
+                        case "Narikei":
+                            t = new Text("Kn*");
                             nodeList.add(t);
                             break;
                         case "Kyosha":
                             t = new Text("L");
                             nodeList.add(t);
                             break;
+                        case "Narikyo":
+                            t = new Text("L*");
+                            nodeList.add(t);
+                            break;
                         case "Kaku":
                             t = new Text("B");
+                            nodeList.add(t);
+                            break;
+                        case "Ryuma":
+                            t = new Text("B*");
                             nodeList.add(t);
                             break;
                         case "Hisha":
                             t = new Text("R");
                             nodeList.add(t);
                             break;
+                        case "Ryu":
+                            t = new Text("R*");
+                            nodeList.add(t);
+                            break;
                         case "Fuhyo":
                             t = new Text("P");
+                            nodeList.add(t);
+                            break;
+                        case "Tokin":
+                            t = new Text("P*");
                             nodeList.add(t);
                             break;
                         default:

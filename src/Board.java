@@ -129,7 +129,7 @@ public class Board {
         return turn;
     }
 
-    public void movePiece(Piece piece, int newY, int newX) {
+    public void movePiece(Piece piece, int newY, int newX, boolean promote) {
         try {
             int x = piece.getPosX();
             int y = piece.getPosY();
@@ -148,6 +148,20 @@ public class Board {
             board[newY][newX] = piece;
             piece.setPosX(newX);
             piece.setPosY(newY);
+
+            //promote pawn, lance, knight
+            if(newY == 4 + 4*piece.getDir() && (piece.getName() == "Fuhyo" ||
+                    piece.getName() == "Kei-Ma" || piece.getName() == "Kyosha")){
+                piece.promote();
+            } else if (newY == 4 + 3*piece.getDir() && (piece.getName() == "Kei-Ma")){
+                piece.promote();
+            }
+
+            //regular promote
+            if(promote){
+                piece.promote();
+            }
+
             boolean[][] pieceMoves = legalMoves(piece);
             if(piece.getDir() == 1){
                 if(kingTwo.getPosY() != -1 && pieceMoves[kingTwo.getPosY()][kingTwo.getPosX()]){
@@ -189,13 +203,13 @@ public class Board {
         if (piece.getDir() == 1) {
             int i = 0;
             while (capturedTwo[i] != null) i++;
-            capturedTwo[i] = new Piece(piece.getName(), -1, -1, -1);
+            capturedTwo[i] = new Piece(piece.getOriginalName(), -1, -1, -1);
             king2CheckPieces.remove(piece);
             if(king2CheckPieces.isEmpty()) kingTwoInCheck = false;
         } else {
             int i = 0;
             while (capturedOne[i] != null) i++;
-            capturedOne[i] = new Piece(piece.getName(), 1, -1, -1);
+            capturedOne[i] = new Piece(piece.getOriginalName(), 1, -1, -1);
             king1CheckPieces.remove(piece);
             if(king1CheckPieces.isEmpty()) kingOneInCheck = false;
         }

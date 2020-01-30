@@ -1,5 +1,7 @@
 import javafx.scene.control.IndexRange;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Board {
@@ -11,10 +13,18 @@ public class Board {
     private Piece kingOne;
     private Piece kingTwo;
 
+    private boolean kingOneInCheck;
+    private boolean kingTwoInCheck;
+    private ArrayList<Piece> king1CheckPieces;
+    private ArrayList<Piece> king2CheckPieces;
+
     public Board() {
         board = new Piece[9][9];
         capturedOne = new Piece[40];
         capturedTwo = new Piece[40];
+
+        king1CheckPieces = new ArrayList<>();
+        king2CheckPieces = new ArrayList<>();
 
         populateSide(1);
         populateSide(-1);
@@ -138,6 +148,28 @@ public class Board {
             board[newY][newX] = piece;
             piece.setPosX(newX);
             piece.setPosY(newY);
+            boolean[][] pieceMoves = legalMoves(piece);
+            if(piece.getDir() == 1){
+                if(kingTwo.getPosY() != -1 && pieceMoves[kingTwo.getPosY()][kingTwo.getPosX()]){
+                    kingTwoInCheck = true;
+                    king2CheckPieces.add(piece);
+                } else {
+                    king2CheckPieces.remove(piece);
+                }
+                if(king2CheckPieces.isEmpty()){
+                    kingTwoInCheck = false;
+                }
+            } else {
+                if(kingOne.getPosY() != -1 && pieceMoves[kingOne.getPosY()][kingOne.getPosX()]){
+                    kingOneInCheck = true;
+                    king1CheckPieces.add(piece);
+                } else {
+                    king1CheckPieces.remove(piece);
+                }
+                if(king1CheckPieces.isEmpty()){
+                    kingOneInCheck = false;
+                }
+            }
             turn *= -1;
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
@@ -158,10 +190,14 @@ public class Board {
             int i = 0;
             while (capturedTwo[i] != null) i++;
             capturedTwo[i] = new Piece(piece.getName(), -1, -1, -1);
+            king2CheckPieces.remove(piece);
+            if(king2CheckPieces.isEmpty()) kingTwoInCheck = false;
         } else {
             int i = 0;
             while (capturedOne[i] != null) i++;
             capturedOne[i] = new Piece(piece.getName(), 1, -1, -1);
+            king1CheckPieces.remove(piece);
+            if(king1CheckPieces.isEmpty()) kingOneInCheck = false;
         }
         int i = 5;
     }
@@ -169,8 +205,7 @@ public class Board {
     public boolean[][] legalMoves(Piece piece) {
         boolean[][] lMoves = new boolean[9][9];
         boolean nullPiece = (piece == null);
-        boolean kingInCheck = (check(piece.getDir()) && !piece.getName().equals("Gyoku"));
-        if (nullPiece || kingInCheck) {
+        if (nullPiece) {
             boolean[] arr = new boolean[9];
             Arrays.fill(arr, false);
             Arrays.fill(lMoves, arr);
@@ -199,7 +234,6 @@ public class Board {
                     }
                 }
             }
-            return lMoves;
         } else {
             int[][] possibleMoves = piece.getPossibleMoves();
             for (int i = 0; i < possibleMoves.length; i++) {
@@ -238,6 +272,12 @@ public class Board {
             }
         }
 
+        if(piece.getDir() == 1 && kingOneInCheck){
+            lMoves = trimCheck(lMoves, piece);
+        } else if (piece.getDir() == -1 && kingTwoInCheck){
+            lMoves = trimCheck(lMoves, piece);
+        }
+
         return lMoves;
     }
 
@@ -259,40 +299,72 @@ public class Board {
         }
     }
 
-    private boolean check(int team) {
-        boolean ch = false;
+    private boolean[][] trimCheck(boolean[][] initialLMoves, Piece piece){
+        boolean[][] trimmedMoves = new boolean[9][9];
+        //check pieces is all the pieces putting king in check
+        ArrayList<Piece> checkPieces;
         Piece king;
-        if(team == 1){
+        if(piece.getDir() == 1){
+            checkPieces = king1CheckPieces;
             king = kingOne;
         } else {
+            checkPieces = king2CheckPieces;
             king = kingTwo;
         }
-        boolean[][] enemyMoves = allMoves(team * -1);
-        if(king.getPosX() == -1 || king.getPosY() == -1){
-            return false;
-        }
-        if(enemyMoves[king.getPosY()][king.getPosX()]){
-            return true;
-        } else {
-            return false;
-        }
-    }
 
-    private boolean[][] allMoves(int team) {
-        boolean[][] moves = new boolean[9][9];
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] != null && board[i][j].getDir() == team) {
-                    boolean[][] lMoves = legalMoves(board[i][j]);
-                    for (int k = 0; k < lMoves.length; k++) {
-                        for (int l = 0; l < lMoves[k].length; k++) {
-                            moves[k][l] = moves[k][l] || lMoves[k][l];
+        //initial positions
+        int oldX = piece.getPosX(), oldY = piece.getPosY();
+        Piece killedPiece;
+
+        for(int i = 0; i < initialLMoves.length; i++){
+            for(int j = 0; j < initialLMoves[i].length; j++){
+                trimmedMoves[i][j] = initialLMoves[i][j];
+                if(initialLMoves[i][j]){
+                    boolean checkSpace = false;
+
+                    if(oldX != -1 || oldY != -1){
+                        board[oldX][oldY] = null;
+                    }
+                    killedPiece = null;
+                    if(board[i][j] != null){
+                        killedPiece = board[i][j];
+                        killedPiece.setPosX(-1);
+                        killedPiece.setPosY(-1);
+                    }
+                    board[i][j] = piece;
+                    piece.setPosX(j);
+                    piece.setPosY(i);
+
+                    for(Piece p : checkPieces){
+                        boolean[][] attackMoves = legalMoves(p);
+                        //make sure king pos is never -1,-1 for this
+                        if(attackMoves[king.getPosY()][king.getPosX()]){
+                            checkSpace = true;
                         }
+                    }
+
+                    if(oldX != -1 || oldY != -1) {
+                        board[oldY][oldX] = piece;
+                    }
+                    piece.setPosY(oldY);
+                    piece.setPosX(oldX);
+
+                    board[i][j] = null;
+
+                    if(killedPiece != null) {
+                        board[i][j] = killedPiece;
+                        killedPiece.setPosY(i);
+                        killedPiece.setPosX(j);
+                    }
+
+                    if(checkSpace){
+                        trimmedMoves[i][j] = false;
                     }
                 }
             }
         }
-        return moves;
+
+        return trimmedMoves;
     }
 
     private boolean fuhyoInFile(int col, int team) {

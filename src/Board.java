@@ -83,14 +83,6 @@ public class Board {
             int[] pos = new int[]{0, piece.getPosY(), piece.getPosX()};
             return pos;
         }
-        /*for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                if (piece == board[i][j]) {
-                    int[] pos = new int[]{0, i, j};
-                    return pos;
-                }
-            }
-        }*/
 
         for (int i = 0; i < capturedOne.length; i++) {
             if (capturedOne[i] == piece) {
@@ -172,6 +164,9 @@ public class Board {
                 }
                 if(king2CheckPieces.isEmpty()){
                     kingTwoInCheck = false;
+                } else {
+                    boolean checkmate = checkmate(-1);
+                    if(checkmate) System.out.println("CHECKMATE");
                 }
             } else {
                 if(kingOne.getPosY() != -1 && pieceMoves[kingOne.getPosY()][kingOne.getPosX()]){
@@ -182,6 +177,9 @@ public class Board {
                 }
                 if(king1CheckPieces.isEmpty()){
                     kingOneInCheck = false;
+                } else {
+                    boolean checkmate = checkmate(1);
+                    if(checkmate) System.out.println("CHECKMATE");
                 }
             }
             turn *= -1;
@@ -389,6 +387,38 @@ public class Board {
             }
         }
         return false;
+    }
+
+    private boolean[][] allMoves(int team){
+        boolean[][] possibleMoves = new boolean[9][9];
+        boolean[][] lMoves;
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[0].length; j++){
+                possibleMoves[i][j] = false;
+                Piece p = board[i][j];
+                if(p != null && p.getDir() == team){
+                    lMoves = legalMoves(p);
+                    for(int y = 0; y < possibleMoves.length; y++){
+                        for(int x = 0; x < possibleMoves.length; x++){
+                            possibleMoves[y][x] = possibleMoves[y][x] || lMoves[y][x];
+                        }
+                    }
+                }
+            }
+        }
+        return possibleMoves;
+    }
+
+    private boolean checkmate(int team){
+        boolean[][] possibleMoves = allMoves(team);
+        boolean availableMove = true;
+        for(int i = 0; i < possibleMoves.length; i++){
+            for(int j = 0; j < possibleMoves[0].length; j++){
+                availableMove = availableMove && possibleMoves[i][j];
+            }
+        }
+
+        return availableMove;
     }
 
     public String toString() {

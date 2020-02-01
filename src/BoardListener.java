@@ -1,5 +1,4 @@
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 
 public class BoardListener extends HBox {
@@ -92,6 +91,7 @@ public class BoardListener extends HBox {
                         || (selectedPiece.getPosY() == 4 + (3 * selectedPiece.getDir()))
                         || (selectedPiece.getPosY() == 4 + (4 * selectedPiece.getDir()))) && promote) {
                     board.movePiece(selectedPiece, row, col, true);
+                    promote = false;
                 } else {
                     board.movePiece(selectedPiece, row, col, false);
                 }

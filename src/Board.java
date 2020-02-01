@@ -17,6 +17,9 @@ public class Board {
     private boolean kingTwoInCheck;
     private ArrayList<Piece> king1CheckPieces;
     private ArrayList<Piece> king2CheckPieces;
+    private ArrayList<Piece> teamOnePieces;
+    private ArrayList<Piece> teamTwoPieces;
+
 
     public Board() {
         board = new Piece[9][9];
@@ -28,6 +31,7 @@ public class Board {
 
         populateSide(1);
         populateSide(-1);
+        updatePieceLists();
     }
 
     private void populateSide(int dir) {
@@ -66,6 +70,20 @@ public class Board {
         for (int i = 0; i < board.length; i++) {
             Piece fuhyo = new Piece("Fuhyo", dir, i, (base + 2 * dir));
             board[base + 2 * dir][i] = fuhyo;
+        }
+    }
+
+    private void updatePieceLists(){
+        teamOnePieces = new ArrayList<>();
+        teamTwoPieces = new ArrayList<>();
+        for (Piece[] piecerow: board) {
+            for(Piece piece: piecerow){
+                if(piece != null && piece.getDir() == 1){
+                    teamOnePieces.add(piece);
+                } else if (piece != null && piece.getDir() == -1){
+                    teamTwoPieces.add(piece);
+                }
+            }
         }
     }
 
@@ -140,6 +158,7 @@ public class Board {
             board[newY][newX] = piece;
             piece.setPosX(newX);
             piece.setPosY(newY);
+            updatePieceLists();
 
             //promote pawn, lance, knight
             if(newY == 4 + 4*piece.getDir() && (piece.getName() == "Fuhyo" ||
@@ -154,37 +173,55 @@ public class Board {
                 piece.promote();
             }
 
-            boolean[][] pieceMoves = legalMoves(piece);
-            if(piece.getDir() == 1){
-                if(kingTwo.getPosY() != -1 && pieceMoves[kingTwo.getPosY()][kingTwo.getPosX()]){
-                    kingTwoInCheck = true;
-                    king2CheckPieces.add(piece);
-                } else {
-                    king2CheckPieces.remove(piece);
-                }
-                if(king2CheckPieces.isEmpty()){
-                    kingTwoInCheck = false;
-                } else {
-                    boolean checkmate = checkmate(-1);
-                    if(checkmate) System.out.println("CHECKMATE");
-                }
-            } else {
-                if(kingOne.getPosY() != -1 && pieceMoves[kingOne.getPosY()][kingOne.getPosX()]){
-                    kingOneInCheck = true;
-                    king1CheckPieces.add(piece);
-                } else {
-                    king1CheckPieces.remove(piece);
-                }
-                if(king1CheckPieces.isEmpty()){
-                    kingOneInCheck = false;
-                } else {
-                    boolean checkmate = checkmate(1);
-                    if(checkmate) System.out.println("CHECKMATE");
-                }
-            }
+            updateCheckLists(1);
+            updateCheckLists(-1);
+
             turn *= -1;
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateCheckLists(int dir){
+        ArrayList<Piece> checkList;
+        ArrayList<Piece> pieceList;
+        Piece king;
+        if(dir == 1){
+            checkList = king2CheckPieces;
+            king = kingTwo;
+            pieceList = teamOnePieces;
+        } else {
+            checkList = king1CheckPieces;
+            king = kingOne;
+            pieceList = teamTwoPieces;
+        }
+
+        boolean[][] pieceMoves;
+        for(Piece piece : pieceList){
+            pieceMoves = legalMoves(piece);
+            if(piece.getDir() == 1){
+                if(king.getPosY() != -1 && pieceMoves[king.getPosY()][king.getPosX()]){
+                    if(dir == 1){
+                        kingTwoInCheck = true;
+                    } else {
+                        kingOneInCheck = true;
+                    }
+                    checkList.add(piece);
+                } else {
+                    checkList.remove(piece);
+                }
+
+            }
+        }
+        if(checkList.isEmpty()){
+            if(dir == 1){
+                kingTwoInCheck = false;
+            } else {
+                kingOneInCheck = false;
+            }
+        } else {
+            boolean checkmate = checkmate(dir * -1);
+            if(checkmate) System.out.println("CHECKMATE");
         }
     }
 
@@ -411,14 +448,14 @@ public class Board {
 
     private boolean checkmate(int team){
         boolean[][] possibleMoves = allMoves(team);
-        boolean availableMove = true;
+        boolean availableMove = false;
         for(int i = 0; i < possibleMoves.length; i++){
             for(int j = 0; j < possibleMoves[0].length; j++){
-                availableMove = availableMove && possibleMoves[i][j];
+                availableMove = availableMove || possibleMoves[i][j];
             }
         }
 
-        return availableMove;
+        return !availableMove;
     }
 
     public String toString() {

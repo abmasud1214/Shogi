@@ -177,6 +177,14 @@ public class Board {
             updateCheckLists(-1);
 
             turn *= -1;
+
+            if(kingOneInCheck){
+                boolean cmate = checkmate(1);
+                if(cmate) System.out.println("CHECKMATE");
+            } else if (kingTwoInCheck) {
+                boolean cmate = checkmate(-1);
+                if(cmate) System.out.println("CHECKMATE");
+            }
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
@@ -219,9 +227,6 @@ public class Board {
             } else {
                 kingOneInCheck = false;
             }
-        } else {
-            boolean checkmate = checkmate(dir * -1);
-            if(checkmate) System.out.println("CHECKMATE");
         }
     }
 
@@ -321,9 +326,9 @@ public class Board {
             }
         }
 
-        if(piece.getDir() == 1 && kingOneInCheck){
+        if(piece.getDir() == 1 && turn == piece.getDir()){
             lMoves = trimCheck(lMoves, piece);
-        } else if (piece.getDir() == -1 && kingTwoInCheck){
+        } else if (piece.getDir() == -1 && turn == piece.getDir()){
             lMoves = trimCheck(lMoves, piece);
         }
 
@@ -353,6 +358,7 @@ public class Board {
         //check pieces is all the pieces putting king in check
         ArrayList<Piece> checkPieces;
         Piece king;
+
         if(piece.getDir() == 1){
             checkPieces = king1CheckPieces;
             king = kingOne;
@@ -372,7 +378,7 @@ public class Board {
                     boolean checkSpace = false;
 
                     if(oldX != -1 || oldY != -1){
-                        board[oldX][oldY] = null;
+                        board[oldY][oldX] = null;
                     }
                     killedPiece = null;
                     if(board[i][j] != null){
@@ -383,6 +389,8 @@ public class Board {
                     board[i][j] = piece;
                     piece.setPosX(j);
                     piece.setPosY(i);
+
+                    updateCheckLists(piece.getDir() * -1);
 
                     for(Piece p : checkPieces){
                         boolean[][] attackMoves = legalMoves(p);
@@ -412,6 +420,8 @@ public class Board {
                 }
             }
         }
+
+        updateCheckLists(piece.getDir() * -1);
 
         return trimmedMoves;
     }

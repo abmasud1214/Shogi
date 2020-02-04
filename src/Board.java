@@ -332,6 +332,10 @@ public class Board {
             lMoves = trimCheck(lMoves, piece);
         }
 
+        if(piece.getPosX() == -1 && piece.getPosY() == -1 && piece.getName().equals("Fuhyo")){
+            lMoves = fuhyoCheckmateRule(lMoves, piece);
+        }
+
         return lMoves;
     }
 
@@ -434,6 +438,55 @@ public class Board {
             }
         }
         return false;
+    }
+
+    private boolean[][] fuhyoCheckmateRule(boolean[][] lMoves, Piece piece){
+        boolean[][] trimmedMoves = new boolean[9][9];
+        ArrayList<Piece> checkList;
+        Piece king;
+        if(turn == 1){
+            checkList = king2CheckPieces;
+            king = kingTwo;
+        } else {
+            checkList = king1CheckPieces;
+            king = kingOne;
+        }
+
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board.length; j++){
+                trimmedMoves[i][j] = lMoves[i][j];
+                if(lMoves[i][j]){
+                    if((i + (1*turn) >= 0) && ((i + 1*turn) < board.length)){
+                        if(board[i + (1*piece.getDir())][j] == king){
+                            board[i][j] = piece;
+                            piece.setPosY(i);
+                            piece.setPosX(j);
+                            checkList.add(piece);
+                            if(turn == 1){
+                                kingTwoInCheck = true;
+                            } else {
+                                kingOneInCheck = true;
+                            }
+
+                            boolean cmate = checkmate(turn * -1);
+                            if(cmate) trimmedMoves[i][j] = false;
+
+                            board[i][j] = null;
+                            piece.setPosY(-1);
+                            piece.setPosX(-1);
+                            checkList.remove(piece);
+                            if(turn == 1){
+                                kingTwoInCheck = !checkList.isEmpty();
+                            } else {
+                                kingOneInCheck = !checkList.isEmpty();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return trimmedMoves;
     }
 
     private boolean[][] allMoves(int team){

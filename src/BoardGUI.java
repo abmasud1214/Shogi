@@ -73,9 +73,9 @@ public class BoardGUI extends Pane {
     }
 
     public void drawPieces() throws FileNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream("src/Resources/emptypiece.png");
+        FileInputStream fileInputStream = new FileInputStream("C:\\Users\\abmasud\\IdeaProjects\\Shogi\\Shogi\\src\\Resources\\emptypiece.png");
         Image image = new Image(fileInputStream);
-        Image image2 = new Image(new FileInputStream("src/Resources/emptypiece2.png"));
+        Image image2 = new Image(new FileInputStream("C:\\Users\\abmasud\\IdeaProjects\\Shogi\\Shogi\\src\\Resources\\emptypiece2.png"));
         ImageView imageView;
 
         Text t;

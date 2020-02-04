@@ -1,11 +1,17 @@
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.w3c.dom.css.Rect;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 public class BoardGUI extends Pane {
 
@@ -39,7 +45,11 @@ public class BoardGUI extends Pane {
             }
         }
 
-        drawPieces();
+        try {
+            drawPieces();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void drawLegal(Piece piece, boolean promote){
@@ -62,70 +72,188 @@ public class BoardGUI extends Pane {
         }
     }
 
-    public void drawPieces(){
+    public void drawPieces() throws FileNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream("src/Resources/emptypiece.png");
+        Image image = new Image(fileInputStream);
+        Image image2 = new Image(new FileInputStream("src/Resources/emptypiece2.png"));
+        ImageView imageView;
+
         Text t;
         for(int i = 0; i < rectList.length; i++){
             for(int j = 0; j < rectList[i].length; j++){
                 Piece piece = board.getPiece(i, j);
                 ObservableList<Node> nodeList = rectList[i][j].getChildren();
-                if(nodeList.size() == 2){
+                if(nodeList.size() == 3){
+                    nodeList.remove(1);
                     nodeList.remove(1);
                 }
                 if(piece != null){
                     switch (piece.getName()){
                         case "Gyoku":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("K");
                             nodeList.add(t);
                             break;
                         case "Kin":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("G");
                             nodeList.add(t);
                             break;
                         case "Gin":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("S");
                             nodeList.add(t);
                             break;
                         case "Narigin":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("S*");
                             nodeList.add(t);
                             break;
                         case "Kei-Ma":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("Kn");
                             nodeList.add(t);
                             break;
                         case "Narikei":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("Kn*");
                             nodeList.add(t);
                             break;
                         case "Kyosha":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("L");
                             nodeList.add(t);
                             break;
                         case "Narikyo":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("L*");
                             nodeList.add(t);
                             break;
                         case "Kaku":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("B");
                             nodeList.add(t);
                             break;
                         case "Ryuma":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
                             t = new Text("B*");
+                            nodeList.add(imageView);
                             nodeList.add(t);
                             break;
                         case "Hisha":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("R");
                             nodeList.add(t);
                             break;
                         case "Ryu":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("R*");
                             nodeList.add(t);
                             break;
                         case "Fuhyo":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("P");
                             nodeList.add(t);
                             break;
                         case "Tokin":
+                            if(piece.getDir() == 1){
+                                imageView = new ImageView(image2);
+                            } else {
+                                imageView = new ImageView(image);
+                            }
+                            imageView.setFitWidth(45);
+                            imageView.setPreserveRatio(true);
+                            nodeList.add(imageView);
                             t = new Text("P*");
                             nodeList.add(t);
                             break;

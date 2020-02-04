@@ -1,6 +1,8 @@
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
+import java.io.FileNotFoundException;
+
 public class BoardListener extends HBox {
     private Board board;
     private BoardGUI boardGUI;
@@ -95,7 +97,11 @@ public class BoardListener extends HBox {
                 } else {
                     board.movePiece(selectedPiece, row, col, false);
                 }
-                boardGUI.drawPieces();
+                try {
+                    boardGUI.drawPieces();
+                } catch(FileNotFoundException e){
+                    e.printStackTrace();
+                }
                 capturedGUI1.drawPieces();
                 capturedGUI2.drawPieces();
             }
